@@ -107,6 +107,11 @@ export const useWellnessStore = create<WellnessState>()(
       toggleMusic: () =>
         set((state) => ({
           relaxingMusic: !state.relaxingMusic
+        })),
+
+      removeGoal: (id) =>
+        set((state) => ({
+          goals: state.goals.filter((goal) => goal.id !== id)
         }))
     }),
     {
