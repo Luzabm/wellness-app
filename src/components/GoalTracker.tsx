@@ -1,6 +1,6 @@
 ﻿
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Plus, Target, Trophy } from 'lucide-react'
+import { Check, Plus, Target, Trophy, Trash2 } from 'lucide-react'
 import React, { useState } from 'react'
 import { useWellnessStore } from '../store/wellnessStore'
 
