@@ -1,4 +1,3 @@
-﻿
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Plus, Target, Trophy, Trash2 } from 'lucide-react'
 import React, { useState } from 'react'
@@ -8,6 +7,7 @@ const GoalTracker: React.FC = () => {
   const { goals, addGoal, toggleGoal, removeGoal } = useWellnessStore()
   const [newGoal, setNewGoal] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [goalToDelete, setGoalToDelete] = useState<string | null>(null)
 
   const completedGoals = goals.filter(goal => goal.completed).length
   const completionRate = goals.length > 0 ? (completedGoals / goals.length) * 100 : 0
@@ -18,6 +18,13 @@ const GoalTracker: React.FC = () => {
       addGoal(newGoal.trim())
       setNewGoal('')
       setShowForm(false)
+    }
+  }
+
+  const handleDelete = () => {
+    if (goalToDelete) {
+      removeGoal(goalToDelete)
+      setGoalToDelete(null)
     }
   }
 
@@ -145,7 +152,7 @@ const GoalTracker: React.FC = () => {
           {goals.slice(-5).reverse().map((goal, index) => (
             <motion.div
               key={goal.id}
-              className={`flex items-center space-x-3 p-3 rounded-xl border transition-all ${
+              className={`flex items-center space-x-3 p-3 rounded-xl border transition-all group ${
                 goal.completed
                   ? 'bg-green-50 border-green-200'
                   : 'bg-white/70 border-amber-200 hover:border-amber-300'
@@ -153,6 +160,7 @@ const GoalTracker: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.02 }}
             >
               <motion.button
                 onClick={() => toggleGoal(goal.id)}
@@ -177,57 +185,10 @@ const GoalTracker: React.FC = () => {
                 </AnimatePresence>
               </motion.button>
 
-              <div className="flex-1">
-                <p className={`text-sm ${
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm truncate ${
                   goal.completed 
                     ? 'text-green-700 line-through' 
                     : 'text-gray-700'
                 }`}>
-                  {goal.title}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {new Date(goal.date).toLocaleDateString('pt-BR')}
-                </p>
-              </div>
-
-              {goal.completed && (
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  className="text-green-500"
-                >
-                  🎉
-                </motion.div>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-8">
-          <motion.div
-            className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4"
-            animate={{ 
-              scale: [1, 1.1, 1],
-              rotate: [0, 5, -5, 0]
-            }}
-            transition={{ 
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          >
-            <Target className="w-8 h-8 text-amber-400" />
-          </motion.div>
-          <p className="text-amber-600 text-sm">
-            Defina suas primeiras metas! 🎯
-          </p>
-          <p className="text-amber-500 text-xs mt-1">
-            Pequenos objetivos levam a grandes conquistas
-          </p>
-        </div>
-      )}
-    </motion.div>
-  )
-}
-
-export default GoalTracker
+                  {goal
