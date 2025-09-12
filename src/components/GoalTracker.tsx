@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { useWellnessStore } from '../store/wellnessStore'
 
 const GoalTracker: React.FC = () => {
-  const { goals, addGoal, toggleGoal } = useWellnessStore()
+  const { goals, addGoal, toggleGoal, removeGoal } = useWellnessStore()
   const [newGoal, setNewGoal] = useState('')
   const [showForm, setShowForm] = useState(false)
 
