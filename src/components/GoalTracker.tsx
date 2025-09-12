@@ -66,7 +66,6 @@ const GoalTracker: React.FC = () => {
         </motion.button>
       </div>
 
-      {/* Progresso geral */}
       {goals.length > 0 && (
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
@@ -146,7 +145,6 @@ const GoalTracker: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Lista de metas */}
       {goals.length > 0 ? (
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {goals.slice(-5).reverse().map((goal, index) => (
@@ -191,4 +189,102 @@ const GoalTracker: React.FC = () => {
                     ? 'text-green-700 line-through' 
                     : 'text-gray-700'
                 }`}>
-                  {goal}
+                  {goal.title}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {new Date(goal.date).toLocaleDateString('pt-BR')}
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                {goal.completed && (
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    className="text-green-500"
+                  >
+                    🎉
+                  </motion.div>
+                )}
+
+                <motion.button
+                  onClick={() => setGoalToDelete(goal.id)}
+                  className="p-1 text-red-400 hover:text-red-600 transition-colors"
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                  title="Excluir meta"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <motion.div
+            className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            animate={{ 
+              scale: [1, 1.1, 1],
+              rotate: [0, 5, -5, 0]
+            }}
+            transition={{ 
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <Target className="w-8 h-8 text-amber-400" />
+          </motion.div>
+          <p className="text-amber-600 text-sm">
+            Defina suas primeiras metas! 🎯
+          </p>
+          <p className="text-amber-500 text-xs mt-1">
+            Pequenos objetivos levam a grandes conquistas
+          </p>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {goalToDelete && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-2xl p-6 max-w-sm w-full"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+            >
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Excluir meta?
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Esta ação não pode ser desfeita.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setGoalToDelete(null)}
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex-1 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                >
+                  Excluir
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+export default GoalTracker
