@@ -191,4 +191,4 @@ const GoalTracker: React.FC = () => {
                     ? 'text-green-700 line-through' 
                     : 'text-gray-700'
                 }`}>
-                  {goal
+                  {goal}
