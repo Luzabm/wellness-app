@@ -1,4 +1,3 @@
-
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -22,6 +21,13 @@ export interface WellnessState {
   // Metas
   goals: Array<{ id: string; title: string; completed: boolean; date: string }>
   
+  // Treinos
+  workoutEntries: Array<{
+    date: string // formato: "YYYY-MM-DD"
+    exercises: string[]
+    notes: string
+  }>
+  
   // Configurações
   notifications: boolean
   relaxingMusic: boolean
@@ -32,26 +38,32 @@ export interface WellnessState {
   addGratitudeEntry: (text: string) => void
   addGoal: (title: string) => void
   toggleGoal: (id: string) => void
+  removeGoal: (id: string) => void
   updateBreakTime: () => void
   toggleNotifications: () => void
   toggleMusic: () => void
+  addWorkoutEntry: (date: string, exercises: string[], notes: string) => void
+  getWorkoutByDate: (date: string) => { exercises: string[]; notes: string } | undefined
 }
 
 export const useWellnessStore = create<WellnessState>()(
   persist(
     (set, get) => ({
+      // Estado inicial
       waterIntake: 0,
-      waterGoal: 2000, // 2L em ml
+      waterGoal: 2000,
       currentMood: 5,
       moodHistory: [],
       lastBreakTime: Date.now(),
-      breakInterval: 60, // 1 hora
+      breakInterval: 60,
       eyeRestReminders: true,
       gratitudeEntries: [],
       goals: [],
+      workoutEntries: [],
       notifications: true,
       relaxingMusic: false,
 
+      // Actions
       addWater: (amount) =>
         set((state) => ({
           waterIntake: Math.min(state.waterIntake + amount, state.waterGoal)
@@ -61,7 +73,7 @@ export const useWellnessStore = create<WellnessState>()(
         set((state) => ({
           currentMood: mood,
           moodHistory: [
-            ...state.moodHistory.slice(-6), // Manter apenas os últimos 7 dias
+            ...state.moodHistory.slice(-6),
             { date: new Date().toISOString().split('T')[0], mood }
           ]
         })),
@@ -70,7 +82,7 @@ export const useWellnessStore = create<WellnessState>()(
         set((state) => ({
           gratitudeEntries: [
             { date: new Date().toISOString().split('T')[0], text },
-            ...state.gratitudeEntries.slice(0, 9) // Manter apenas as últimas 10
+            ...state.gratitudeEntries.slice(0, 9)
           ]
         })),
 
@@ -94,6 +106,11 @@ export const useWellnessStore = create<WellnessState>()(
           )
         })),
 
+      removeGoal: (id) =>
+        set((state) => ({
+          goals: state.goals.filter((goal) => goal.id !== id)
+        })),
+
       updateBreakTime: () =>
         set(() => ({
           lastBreakTime: Date.now()
@@ -109,19 +126,27 @@ export const useWellnessStore = create<WellnessState>()(
           relaxingMusic: !state.relaxingMusic
         })),
 
-      removeGoal: (id) =>
-        set((state) => ({
-          goals: state.goals.filter((goal) => goal.id !== id)
-        })),
+      addWorkoutEntry: (date, exercises, notes) =>
+        set((state) => {
+          const existingEntryIndex = state.workoutEntries.findIndex(entry => entry.date === date)
+          
+          if (existingEntryIndex >= 0) {
+            // Atualiza entrada existente
+            const updatedEntries = [...state.workoutEntries]
+            updatedEntries[existingEntryIndex] = { date, exercises, notes }
+            return { workoutEntries: updatedEntries }
+          }
+          
+          // Adiciona nova entrada
+          return {
+            workoutEntries: [...state.workoutEntries, { date, exercises, notes }]
+          }
+        }),
 
-      workoutEntries: Array<{
-        date: string // formato: "YYYY-MM-DD"
-        exercises: string[]
-        notes: string
-      }>
-      addWorkoutEntry: (date: string, exercises: string[], notes: string) => void
-      getWorkoutByDate: (date: string) => { exercises: string[]; notes: string } | undefined
-    }}),
+      getWorkoutByDate: (date) => {
+        return get().workoutEntries.find(entry => entry.date === date)
+      }
+    }),
     {
       name: 'wellness-storage'
     }
