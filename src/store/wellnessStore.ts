@@ -121,11 +121,6 @@ export const useWellnessStore = create<WellnessState>()(
           notifications: !state.notifications
         })),
 
-      toggleMusic: () =>
-        set((state) => ({
-          relaxingMusic: !state.relaxingMusic
-        })),
-
       addWorkoutEntry: (date, exercises, notes) =>
         set((state) => {
           const existingEntryIndex = state.workoutEntries.findIndex(entry => entry.date === date)
