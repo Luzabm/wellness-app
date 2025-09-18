@@ -112,8 +112,16 @@ export const useWellnessStore = create<WellnessState>()(
       removeGoal: (id) =>
         set((state) => ({
           goals: state.goals.filter((goal) => goal.id !== id)
-        }))
-    }),
+        })),
+
+      workoutEntries: Array<{
+        date: string // formato: "YYYY-MM-DD"
+        exercises: string[]
+        notes: string
+      }>
+      addWorkoutEntry: (date: string, exercises: string[], notes: string) => void
+      getWorkoutByDate: (date: string) => { exercises: string[]; notes: string } | undefined
+    }}),
     {
       name: 'wellness-storage'
     }
