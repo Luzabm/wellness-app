@@ -7,7 +7,7 @@ import GratitudeJournal from './components/GratitudeJournal'
 import Header from './components/Header'
 import MoodTracker from './components/MoodTracker'
 import MotivationalMessage from './components/MotivationalMessage'
-import RelaxationPlayer from './components/RelaxationPlayer'
+import WorkoutCalendar from './components/WorkoutCalendar'
 import WaterTracker from './components/WaterTracker'
 
 function App() {
@@ -40,7 +40,7 @@ function App() {
           <div className="space-y-6">
             <WaterTracker />
             <BreakReminder />
-            <RelaxationPlayer />
+            <WorkoutCalendar />  
           </div>
 
           {/* Segunda coluna */}
